@@ -1,16 +1,22 @@
 # bible_app
 
-A new Flutter project.
+A beautifully crafted **Bible App** built with **Flutter**,
+enabling users to read, highlight,
+and explore scriptures using a clean UI and API-powered data.
+It supports local highlights with color tagging using **Hive**.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- 📚 Browse books and chapters of the Bible
+- 🔍 Read verses fetched from [Bible API](https://bible-api.com/)
+- 🌈 Highlight verses in multiple colors (Yellow, Green, Blue, Pink)
+- 💾 Highlights saved locally using Hive (persistent across sessions)
+- 🧭 Smooth navigation across Bible content
+- 📦 Scalable project structure (`features`, `core`, `data`, `widgets`)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🏗️ Project Structure
+
