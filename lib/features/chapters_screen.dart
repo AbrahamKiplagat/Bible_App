@@ -7,7 +7,6 @@ class ChaptersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments;
 
-    // Enhanced error handling
     if (args == null || args is! Map<String, dynamic>) {
       return _buildErrorScreen('Invalid book data');
     }
@@ -22,15 +21,27 @@ class ChaptersScreen extends StatelessWidget {
       ),
       body: chaptersCount <= 0
           ? _buildEmptyState()
-          : _buildChapterGrid(context, bookName, chaptersCount),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                // Adjust grid layout based on screen size
+                if (constraints.maxWidth > 800) {
+                  return _buildChapterGrid(context, bookName, chaptersCount, 10);
+                } else if (constraints.maxWidth > 600) {
+                  return _buildChapterGrid(context, bookName, chaptersCount, 7);
+                } else {
+                  return _buildChapterGrid(context, bookName, chaptersCount, 5);
+                }
+              },
+            ),
     );
   }
 
-  Widget _buildChapterGrid(BuildContext context, String bookName, int count) {
+  Widget _buildChapterGrid(
+      BuildContext context, String bookName, int count, int columns) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5, // Suggested: Responsive grid
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
         mainAxisSpacing: 8,
         crossAxisSpacing: 8,
         childAspectRatio: 1.2,
@@ -38,17 +49,32 @@ class ChaptersScreen extends StatelessWidget {
       itemCount: count,
       itemBuilder: (context, index) {
         final chapter = index + 1;
-        return FilledButton( // Suggested: Use FilledButton for M3
+        return FilledButton(
           style: FilledButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
+            padding: EdgeInsets.zero, // Better for small screens
           ),
           onPressed: () => _navigateToChapter(context, bookName, chapter),
-          child: Text('$chapter'),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '$chapter',
+              style: TextStyle(
+                fontSize: _calculateFontSize(context, columns),
+              ),
+            ),
+          ),
         );
       },
     );
+  }
+
+  double _calculateFontSize(BuildContext context, int columns) {
+    final width = MediaQuery.of(context).size.width;
+    // Scale font size based on screen width and number of columns
+    return width / columns / 3;
   }
 
   void _navigateToChapter(BuildContext context, String bookName, int chapter) {
@@ -58,7 +84,7 @@ class ChaptersScreen extends StatelessWidget {
       arguments: {
         'bookName': bookName,
         'chapter': chapter,
-        'key': '$bookName-$chapter', // Suggested: Unique key for caching
+        'key': '$bookName-$chapter',
       },
     );
   }
@@ -66,11 +92,21 @@ class ChaptersScreen extends StatelessWidget {
   Widget _buildErrorScreen(String message) {
     return Scaffold(
       appBar: AppBar(title: const Text('Error')),
-      body: Center(child: Text(message)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(message, textAlign: TextAlign.center),
+        ),
+      ),
     );
   }
 
   Widget _buildEmptyState() {
-    return const Center(child: Text('No chapters available'));
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Text('No chapters available'),
+      ),
+    );
   }
 }

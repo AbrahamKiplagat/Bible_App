@@ -39,7 +39,19 @@ class _ChapterScreenState extends State<ChapterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_headerTitle),
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            // Adjust title based on available space
+            if (constraints.maxWidth < 300) {
+              return Text(
+                _headerTitle,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              );
+            }
+            return Text(_headerTitle);
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -56,17 +68,26 @@ class _ChapterScreenState extends State<ChapterScreen> {
           
           if (snapshot.hasError || snapshot.data == null) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48),
-                  const SizedBox(height: 16),
-                  Text(snapshot.error?.toString() ?? 'No verse data'),
-                  TextButton(
-                    onPressed: _refreshChapter,
-                    child: const Text('Retry'),
-                  ),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        snapshot.error?.toString() ?? 'No verse data',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: _refreshChapter,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -79,30 +100,44 @@ class _ChapterScreenState extends State<ChapterScreen> {
   }
 
   Widget _buildVerseList(List<Map<String, dynamic>> verses) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemCount: verses.length,
-      itemBuilder: (context, index) {
-        final verse = verses[index];
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text.rich(
-              TextSpan(
-                children: [
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Use different padding based on screen size
+        final padding = constraints.maxWidth > 600 ? 24.0 : 16.0;
+        
+        return ListView.separated(
+          padding: EdgeInsets.all(padding),
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          itemCount: verses.length,
+          itemBuilder: (context, index) {
+            final verse = verses[index];
+            return Card(
+              elevation: constraints.maxWidth > 600 ? 2 : 1,
+              child: Padding(
+                padding: EdgeInsets.all(padding / 2),
+                child: Text.rich(
                   TextSpan(
-                    text: '${verse['verse']}. ',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
+                    children: [
+                      TextSpan(
+                        text: '${verse['verse']}. ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          fontSize: constraints.maxWidth > 600 ? 18 : 16,
+                        ),
+                      ),
+                      TextSpan(
+                        text: verse['text'],
+                        style: TextStyle(
+                          fontSize: constraints.maxWidth > 600 ? 18 : 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  TextSpan(text: verse['text']),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -111,7 +146,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
   void _refreshChapter() {
     setState(() {
       _versesFuture = _apiService.fetchChapter(
-        // Extract arguments again in case they changed
         (ModalRoute.of(context)?.settings.arguments as Map)['bookName'],
         (ModalRoute.of(context)?.settings.arguments as Map)['chapter'],
       );

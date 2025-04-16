@@ -4,7 +4,6 @@ import 'features/chapters_screen.dart';
 import 'features/chapter_screen.dart';
 
 void main() {
-  // Suggested: Add error handling wrapper
   runApp(const MyApp());
 }
 
@@ -22,13 +21,11 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.blue,
           brightness: Brightness.light,
         ),
-        // Suggested: Add consistent text theme
         textTheme: const TextTheme(
           titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       initialRoute: '/',
-      // Suggested: Use onGenerateRoute for better error handling
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/':
