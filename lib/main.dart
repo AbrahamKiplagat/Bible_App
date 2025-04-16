@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'features/home_screen.dart';
 import 'features/chapters_screen.dart';
 import 'features/chapter_screen.dart';
+import 'features/welcome_ui.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,11 +26,13 @@ class MyApp extends StatelessWidget {
           titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (_) => const HomeScreen());
+      initialRoute: '/welcome',
+onGenerateRoute: (settings) {
+  switch (settings.name) {
+    case '/welcome':
+      return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+    case '/':
+      return MaterialPageRoute(builder: (_) => const HomeScreen());
           case '/chapters':
             return MaterialPageRoute(
               builder: (_) => const ChaptersScreen(),
