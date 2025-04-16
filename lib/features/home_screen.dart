@@ -11,12 +11,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Bible Books'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.pushNamed(context, '/search');
-            },
-          ),
+          
         ],
       ),
       body: ListView.builder(
